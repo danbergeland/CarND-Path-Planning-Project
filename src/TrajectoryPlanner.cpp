@@ -7,3 +7,11 @@
 //
 
 #include "TrajectoryPlanner.hpp"
+
+
+TrajectoryPlanner::TrajectoryPlanner(){
+    Steps = 0;
+}
+TrajectoryPlanner::~TrajectoryPlanner(){
+    
+}

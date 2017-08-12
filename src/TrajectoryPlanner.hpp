@@ -11,4 +11,14 @@
 
 #include <stdio.h>
 
+class TrajectoryPlanner{
+
+public:
+    
+    TrajectoryPlanner();
+    ~TrajectoryPlanner();
+    
+    int Steps;
+};
+
 #endif /* TrajectoryPlanner_hpp */
