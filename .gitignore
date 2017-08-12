@@ -2,3 +2,4 @@ build/
 term3_sim_mac/
 .DS_Store
 Catch/
+src/PathFinding/
