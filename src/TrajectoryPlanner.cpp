@@ -9,11 +9,11 @@
 #include "TrajectoryPlanner.hpp"
 #include "geometryhelpers.hpp"
 
-double dist_inc = 0.5;
 
 
 TrajectoryPlanner::TrajectoryPlanner(){
     steps = 50;
+    dist_inc = 0.5;
     next_x_vals = vector<double>();
     next_y_vals = vector<double>();
 }

@@ -19,7 +19,7 @@ public:
     TrajectoryPlanner();
     ~TrajectoryPlanner();
     void UpdateXYVals(double car_x, double car_y, double car_yaw);
-    
+    double dist_inc;
     int steps;
     std::vector<double> next_x_vals;
     std::vector<double> next_y_vals;
