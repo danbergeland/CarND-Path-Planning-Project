@@ -12,25 +12,20 @@
 
 #include <fstream>
 #include <math.h>
-#include <uWS/uWS.h>
-#include <chrono>
 #include <iostream>
 #include <thread>
 #include <vector>
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
-#include "json.hpp"
 
-#include "PositionLogic.hpp"
-#include "geometryhelpers.hpp"
-#include "TrajectoryPlanner.hpp"
+
 
 using namespace std;
 
 // For converting back and forth between radians and degrees.
-constexpr double pi() { return M_PI; }
-double deg2rad(double x) { return x * pi() / 180; }
-double rad2deg(double x) { return x * 180 / pi(); }
+constexpr double pi();
+double deg2rad(double x);
+double rad2deg(double x);
 
 double distance(double x1, double y1, double x2, double y2);
 int ClosestWaypoint(double x, double y, vector<double> maps_x, vector<double> maps_y);

@@ -23,5 +23,5 @@ TEST_CASE("Test Framework Works", "TrajectoryPlanner"){
 
 TEST_CASE("Create a TrajectoryPlanner object", "TrajectoryPlanner"){
     TrajectoryPlanner TP = TrajectoryPlanner();
-    REQUIRE(TP.Steps == 0);
+    REQUIRE(TP.steps == 50);
 }

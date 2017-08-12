@@ -1,3 +1,3 @@
 #! /bin/bash
-g++ -I../Catch/include TrajectoryPlanner_Test.cpp TrajectoryPlanner.cpp -o run_test
-./run_test --success
+g++ -std=c++11 -I../Catch/include -I/usr/local/include  TrajectoryPlanner_Test.cpp geometryhelpers.cpp TrajectoryPlanner.cpp -o run_test
+./run_test
