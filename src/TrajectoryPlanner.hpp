@@ -18,7 +18,8 @@ public:
     
     TrajectoryPlanner();
     ~TrajectoryPlanner();
-    void UpdateXYVals(double car_x, double car_y, double car_yaw);
+    void StraightXYVals(double car_x, double car_y, double car_yaw);
+    void MakeTrajectory(double car_s, double car_d, double dest_s, double dest_d);
     double dist_inc;
     int steps;
     std::vector<double> next_x_vals;

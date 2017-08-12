@@ -21,7 +21,7 @@ TrajectoryPlanner::~TrajectoryPlanner(){
     
 }
 
-void TrajectoryPlanner::UpdateXYVals(double car_x, double car_y, double car_yaw)
+void TrajectoryPlanner::StraightXYVals(double car_x, double car_y, double car_yaw)
 {
     next_y_vals = std::vector<double>();
     next_x_vals = std::vector<double>();
@@ -31,3 +31,8 @@ void TrajectoryPlanner::UpdateXYVals(double car_x, double car_y, double car_yaw)
         next_y_vals.push_back(car_y+(dist_inc*i)*sin(deg2rad(car_yaw)));
     }
 }
+
+void TrajectoryPlanner::MakeTrajectory(double car_s, double car_d, double dest_s, double dest_d){
+    
+}
+
