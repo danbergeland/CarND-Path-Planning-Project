@@ -30,9 +30,20 @@ void TrajectoryPlanner::StraightXYVals(double car_x, double car_y, double car_ya
         next_x_vals.push_back(car_x+(dist_inc*i)*cos(deg2rad(car_yaw)));
         next_y_vals.push_back(car_y+(dist_inc*i)*sin(deg2rad(car_yaw)));
     }
+    
 }
 
-void TrajectoryPlanner::MakeTrajectory(double car_s, double car_d, double dest_s, double dest_d){
+void TrajectoryPlanner::MakeTrajectory(double car_s, double car_d, double dest_s, double dest_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y){
+    next_y_vals = std::vector<double>();
+    next_x_vals = std::vector<double>();
     
+    auto start_pos =getXY(car_s,car_d,maps_s,maps_x,maps_y);
+    //planner can start at current x/y position; simulator can handle points in the trajectory behind the car
+    next_x_vals.push_back(start_pos[0]);
+    next_y_vals.push_back(start_pos[1]);
+    
+    //Calculate path in s / d coords
+    
+    //Convert s / d points on the path to x / y values
 }
 
