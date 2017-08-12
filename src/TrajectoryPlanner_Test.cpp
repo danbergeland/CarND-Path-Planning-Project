@@ -7,10 +7,11 @@
 //
 
 #define CATCH_CONFIG_MAIN
-#include "catch.hpp"
+#include "../Catch/single_include/catch.hpp"
 
 #include <stdio.h>
 
-TEST_CASE("First Test", "TrajectoryPlanner"){
-    REQUIRE(false);
+TEST_CASE("Test Framework Works", "TrajectoryPlanner"){
+    REQUIRE(true);
 }
+
