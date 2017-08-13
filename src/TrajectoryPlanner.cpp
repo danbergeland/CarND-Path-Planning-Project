@@ -13,7 +13,7 @@
 
 TrajectoryPlanner::TrajectoryPlanner(){
     steps = 50;
-    dist_inc = 0.5;
+    dist_inc = 0.44;
     next_x_vals = vector<double>();
     next_y_vals = vector<double>();
 }
@@ -33,7 +33,19 @@ void TrajectoryPlanner::StraightXYVals(double car_x, double car_y, double car_ya
     
 }
 
-void TrajectoryPlanner::MakeTrajectory(double car_s, double car_d, double dest_s, double dest_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y){
+void TrajectoryPlanner::FollowLaneXYVals(double car_s, double car_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y){
+    next_y_vals = std::vector<double>();
+    next_x_vals = std::vector<double>();
+    for(int i = 0; i < steps; i++)
+    {
+        auto nextXY = getXY(car_s+(dist_inc*i), car_d, maps_s, maps_x, maps_y);
+        
+        next_x_vals.push_back(nextXY[0]);
+        next_y_vals.push_back(nextXY[1]);
+    }
+}
+
+void TrajectoryPlanner::MakeTrajectory(double time_s, double car_s, double car_d, double dest_s, double dest_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y){
     next_y_vals = std::vector<double>();
     next_x_vals = std::vector<double>();
     

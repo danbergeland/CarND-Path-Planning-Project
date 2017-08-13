@@ -46,7 +46,7 @@ TEST_CASE("Check Geometry of straight line", "TrajectoryPlanner"){
     REQUIRE(TP.next_y_vals[4] == 0);
 }
 
-TEST_CASE("Check maps are loaded to correct size", "TrajectoryPlanner"){
+TEST_CASE("Check maps are loaded to correct number of entries", "GeometryHelpers"){
     
     // Load up map values for waypoint's x,y,s and d normalized normal vectors
     std::vector<double> map_waypoints_x;
@@ -62,8 +62,7 @@ TEST_CASE("Check maps are loaded to correct size", "TrajectoryPlanner"){
     REQUIRE(map_waypoints_dx.size() ==181);
     REQUIRE(map_waypoints_dy.size() ==181);
 
-
-
-    
 }
+
+
 
