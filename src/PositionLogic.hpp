@@ -23,6 +23,13 @@ class PositionLogic {
     positionState _state;
     TrajectoryPlanner _TP;
     double _agression;
+    double _max_speed_mps;
+    double _target_s;
+    double _target_d;
+    double _target_speed_mps;
+    double _target_time;
+    void checkTraffic(const std::vector<std::vector<double>> &vehicles, double car_s, double car_d);
+    
     
 public:
     PositionLogic();

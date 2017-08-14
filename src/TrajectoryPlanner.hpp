@@ -30,7 +30,7 @@ public:
     std::vector<double> next_y_vals;
     
     void StraightXYVals(double car_x, double car_y, double car_yaw);
-    void FollowLaneXYVals(const std::vector<std::vector<double>> &vehicles, double car_s, double car_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y);
+    void FollowLaneXYVals(double follow_dist, double car_s, double car_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y);
     void MakeTrajectory(double car_s, double car_d, double dest_s, double dest_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y);
     
 

@@ -41,11 +41,11 @@ void TrajectoryPlanner::StraightXYVals(double car_x, double car_y, double car_ya
     
 }
 
-void TrajectoryPlanner::FollowLaneXYVals(const std::vector<std::vector<double>> &vehicles, double car_s, double car_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y){
+void TrajectoryPlanner::FollowLaneXYVals(double follow_dist, double car_s, double car_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y){
     next_y_vals = std::vector<double>();
     next_x_vals = std::vector<double>();
     
-    setSpeedFollowVehicle(vehicles, car_s, car_d);
+    dist_inc = follow_dist/steps;
     
     for(int i = 0; i < steps; i++)
     {
