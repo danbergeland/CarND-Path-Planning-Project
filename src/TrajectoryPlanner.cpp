@@ -10,14 +10,13 @@
 #include "geometryhelpers.hpp"
 #include "spline.h"
 
-#define PATH_INC_TIME .02
+
 
 TrajectoryPlanner::TrajectoryPlanner(){
     steps = 100;
     dist_inc = 0.44;
     max_speed_mps = 22;
     plan_time_s = 2;
-    desired_lane_position_d = 6;
     next_x_vals = vector<double>();
     next_y_vals = vector<double>();
 }
@@ -26,7 +25,7 @@ TrajectoryPlanner::~TrajectoryPlanner(){
 }
 
 void TrajectoryPlanner::setPlanTime(double seconds){
-    steps = (int)seconds/PATH_INC_TIME;
+    steps = (int)(seconds/PATH_INC_TIME);
     plan_time_s = seconds;
 }
 

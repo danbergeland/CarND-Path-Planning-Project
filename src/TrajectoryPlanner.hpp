@@ -8,6 +8,7 @@
 
 #ifndef TrajectoryPlanner_hpp
 #define TrajectoryPlanner_hpp
+#define PATH_INC_TIME .02
 
 #include <stdio.h>
 #include <vector>
@@ -18,7 +19,6 @@ class TrajectoryPlanner{
     double dist_inc;
     int steps;
     double plan_time_s;
-    double desired_lane_position_d;
 
 public:
     
