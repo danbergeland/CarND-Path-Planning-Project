@@ -90,7 +90,7 @@ int main() {
 
           	json msgJson;
 
-            TP.FollowLaneXYVals(car_s,car_d,map_waypoints_s,map_waypoints_x,map_waypoints_y);
+            TP.FollowLaneXYVals(sensor_fusion, car_s,car_d,map_waypoints_s,map_waypoints_x,map_waypoints_y);
 
           	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
           	msgJson["next_x"] = TP.next_x_vals;

@@ -8,17 +8,26 @@
 
 #include "TrajectoryPlanner.hpp"
 #include "geometryhelpers.hpp"
+#include "spline.h"
 
-
+#define PATH_INC_TIME .02
 
 TrajectoryPlanner::TrajectoryPlanner(){
-    steps = 50;
+    steps = 100;
     dist_inc = 0.44;
+    max_speed_mps = 22;
+    plan_time_s = 2;
+    desired_lane_position_d = 6;
     next_x_vals = vector<double>();
     next_y_vals = vector<double>();
 }
 TrajectoryPlanner::~TrajectoryPlanner(){
     
+}
+
+void TrajectoryPlanner::setPlanTime(double seconds){
+    steps = (int)seconds/PATH_INC_TIME;
+    plan_time_s = seconds;
 }
 
 void TrajectoryPlanner::StraightXYVals(double car_x, double car_y, double car_yaw)
@@ -33,19 +42,41 @@ void TrajectoryPlanner::StraightXYVals(double car_x, double car_y, double car_ya
     
 }
 
-void TrajectoryPlanner::FollowLaneXYVals(double car_s, double car_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y){
+void TrajectoryPlanner::FollowLaneXYVals(const std::vector<std::vector<double>> &vehicles, double car_s, double car_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y){
     next_y_vals = std::vector<double>();
     next_x_vals = std::vector<double>();
+    
+    setSpeedFollowVehicle(vehicles, car_s, car_d);
+    
     for(int i = 0; i < steps; i++)
     {
-        auto nextXY = getXY(car_s+(dist_inc*i), car_d, maps_s, maps_x, maps_y);
-        
+        auto nextXY = getXY(car_s+(dist_inc*i),car_d , maps_s, maps_x, maps_y);
         next_x_vals.push_back(nextXY[0]);
         next_y_vals.push_back(nextXY[1]);
     }
+
 }
 
-void TrajectoryPlanner::MakeTrajectory(double time_s, double car_s, double car_d, double dest_s, double dest_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y){
+void TrajectoryPlanner::setSpeedFollowVehicle(const std::vector<std::vector<double>> &vehicles, double car_s, double car_d){
+
+    double followDistance = steps * PATH_INC_TIME * max_speed_mps;
+    
+    for (int i = 0; i < vehicles.size(); i++) {
+        double s = vehicles[i][5];
+        double d = vehicles[i][6];
+        double lane_tol = 1;
+        if(car_d < lane_tol+d && car_d> d-lane_tol && s > car_s){
+            if(followDistance>s-car_s){
+                followDistance = s-car_s;
+            }
+        }
+    }
+    dist_inc = followDistance/steps;
+}
+
+
+
+void TrajectoryPlanner::MakeTrajectory(double car_s, double car_d, double dest_s, double dest_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y){
     next_y_vals = std::vector<double>();
     next_x_vals = std::vector<double>();
     

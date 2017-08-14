@@ -13,18 +13,27 @@
 #include <vector>
 
 class TrajectoryPlanner{
+    void setSpeedFollowVehicle(const std::vector<std::vector<double>> &vehicles, double car_s, double car_d);
+    double max_speed_mps;
+    double dist_inc;
+    int steps;
+    double plan_time_s;
+    double desired_lane_position_d;
 
 public:
     
     TrajectoryPlanner();
     ~TrajectoryPlanner();
-    void StraightXYVals(double car_x, double car_y, double car_yaw);
-    void FollowLaneXYVals(double car_s, double car_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y);
-    void MakeTrajectory(double time_s, double car_s, double car_d, double dest_s, double dest_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y);
-    double dist_inc;
-    int steps;
+    
+    void setPlanTime(double seconds);
     std::vector<double> next_x_vals;
     std::vector<double> next_y_vals;
+    
+    void StraightXYVals(double car_x, double car_y, double car_yaw);
+    void FollowLaneXYVals(const std::vector<std::vector<double>> &vehicles, double car_s, double car_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y);
+    void MakeTrajectory(double car_s, double car_d, double dest_s, double dest_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y);
+    
+
 };
 
 #endif /* TrajectoryPlanner_hpp */

@@ -10,5 +10,7 @@
 #define PositionLogic_hpp
 
 #include <stdio.h>
+#include <vector>
+#include "TrajectoryPlanner.hpp"
 
 #endif /* PositionLogic_hpp */
