@@ -13,7 +13,7 @@ double MAX_PLANNING_TIME = 4;
 double LANE_WIDTH = 4;
 
 PositionLogic::PositionLogic(){
-    _TP = TrajectoryPlanner::TrajectoryPlanner();
+    _TP = TrajectoryPlanner();
     _state = laneKeeping;
     _max_speed_mps = 22;
     _target_speed_mps = 21;

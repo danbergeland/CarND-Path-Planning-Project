@@ -40,7 +40,7 @@ string hasData(string s) {
 int main() {
   uWS::Hub h;
     
-  PositionLogic::PositionLogic PL;
+  PositionLogic PL;
     
     
   // Load up map values for waypoint's x,y,s and d normalized normal vectors
