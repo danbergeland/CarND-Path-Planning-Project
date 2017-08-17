@@ -75,7 +75,7 @@ void TrajectoryPlanner::setSpeedFollowVehicle(const std::vector<std::vector<doub
 
 
 
-void TrajectoryPlanner::MakeTrajectory(double car_s, double car_d, double dest_s, double dest_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y){
+void TrajectoryPlanner::MakeTrajectory(double car_s, double car_d, double car_v, double dest_s, double dest_d, double dest_v, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y){
     next_y_vals = std::vector<double>();
     next_x_vals = std::vector<double>();
     

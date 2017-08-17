@@ -15,16 +15,16 @@ double LANE_WIDTH = 4;
 
 //WEIGHTS
 double weight_SPEED = 1;
-double weight_COLLISION = 50;
-double weight_ACCELERATION = 5;
-double weight_TURN = 10;
+double weight_COLLISION = 1000;
+double weight_ACCELERATION = 50;
+double weight_TURN = 50;
 
 PositionLogic::PositionLogic(){
     _TP = TrajectoryPlanner();
     _state = laneKeeping;
     _max_speed_mps = 22;
     _target_speed_mps = 21;
-    SetAgression(.5);
+    SetAgression(.7);
     _vehicles = std::vector<std::vector<double>>();
     _target_d = 6;
 }
@@ -38,11 +38,9 @@ void PositionLogic::Update(const std::vector<std::vector<double>> &vehicles, dou
     _car_s = car_s;
     _car_v = car_speed;
     
-    planPath();
+    planPath();_target
     
-    if(_state==laneKeeping){
-        _TP.FollowLaneXYVals(_target_path_length, car_s, car_d, maps_s, maps_x, maps_y);
-    }
+    _TP.MakeTrajectory(_car_s,_car_d,_car_v,_target_s,_target_d,_target_speed_mps,maps_s,maps_x,maps_y);
 }
 
 void PositionLogic::planPath(){
@@ -56,8 +54,16 @@ void PositionLogic::planPath(){
     generateTargets(targetPositions);
     //evaluate cost of each traj
     evaluateTargets(targetPositions);
-    //give the lowest cost traj to the trajectoryPlanner
-    
+    //Don't attempt to change lane during lane change
+    if(_state = laneKeeping)
+    {
+      if(_target_d < _car_d-2){
+        _state = changeLaneLeft;
+      }
+      else if(_target_d > _car_d-2){
+        _state = changeLaneRight;
+      }
+    }
 }
 
 void PositionLogic::SetAgression(double agression){
@@ -160,13 +166,14 @@ void PositionLogic::evaluateTargets(std::vector<target> &targetsVector){
     }
   }
   
-  if(keep_target_index>0){
+  if(keep_target_index>-1){
     target bestTarget = targetsVector[keep_target_index];
     _target_s = bestTarget.dest_s;
     _target_d = getIdealLaneValue(bestTarget.dest_d);
     _target_speed_mps = bestTarget.dest_v;
+    if(_target_speed_mps > .95* _max_speed_mps) _target_speed_mps = .95*_target_speed_mps;
 #ifdef VERBOSE
-    std::cout<< "Best Target:  "<<_target_s<<", d:  "<<_target_d << ", v:  "<<_target_speed_mps<<"\n";
+    std::cout<< "Best Target: cost "<<lowest_cost<<", d:  "<<_target_d << ", v:  "<<_target_speed_mps<<"\n";
 #endif
   }
 }
