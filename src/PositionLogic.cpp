@@ -57,11 +57,6 @@ void PositionLogic::planPath(){
     //evaluate cost of each traj
     evaluateTargets(targetPositions);
     //give the lowest cost traj to the trajectoryPlanner
-    //_TP.MakeTrajectory(_car_s,_car_d,_target_s,_target_d,)
-    _target_s = _car_s + _target_path_length;
-    double keepLaneCost = costPath(_target_s, _car_d, _car_v);
-    
-    std::cout<< keepLaneCost << "\n";
     
 }
 
@@ -125,13 +120,18 @@ double PositionLogic::costCollision(double dest_s, double dest_d){
 
 void PositionLogic::generateTargets(std::vector<target> &outTargetVector){
   
-  //Always attempt to go straight
+  //Always attempt to go to each lane
   target straight = {_car_s+_target_path_length,_car_d,_car_v};
+  target left = {_car_s+_target_path_length, _car_d-LANE_WIDTH,_car_v};
+  target right = {_car_s+_target_path_length, _car_d+LANE_WIDTH,_car_v};
+
   outTargetVector.push_back(straight);
+  outTargetVector.push_back(left);
+  outTargetVector.push_back(right);
   
   //Always add stop short option
   target stop = {_car_s+10,_car_d, 0};
-  
+  outTargetVector.push_back(stop);
   for (int i = 0; i < _vehicles.size(); i++) {
     //s and d of nearby vehicles
     double s = _vehicles[i][5];
@@ -149,7 +149,33 @@ void PositionLogic::generateTargets(std::vector<target> &outTargetVector){
 }
 
 void PositionLogic::evaluateTargets(std::vector<target> &targetsVector){
+  double lowest_cost = 999999;
+  int keep_target_index = -1;
+  for(int i =0; i<targetsVector.size(); i++){
+    target thisTarget = targetsVector[i];
+    double cost = costPath(thisTarget.dest_s,thisTarget.dest_d,thisTarget.dest_v);
+    if(cost < lowest_cost){
+      lowest_cost = cost;
+      keep_target_index = i;
+    }
+  }
   
+  if(keep_target_index>0){
+    target bestTarget = targetsVector[keep_target_index];
+    _target_s = bestTarget.dest_s;
+    _target_d = getIdealLaneValue(bestTarget.dest_d);
+    _target_speed_mps = bestTarget.dest_v;
+#ifdef VERBOSE
+    std::cout<< "Best Target:  "<<_target_s<<", d:  "<<_target_d << ", v:  "<<_target_speed_mps<<"\n";
+#endif
+  }
+}
+
+double getIdealLaneValue(double d){
+  for(int i=0; i<4; i++){
+    if(d<i*LANE_WIDTH)
+      return i*LANE_WIDTH-2;
+  }
 }
 
 std::vector<double> PositionLogic::NextXValues(){

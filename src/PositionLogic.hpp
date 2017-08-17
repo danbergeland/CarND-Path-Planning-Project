@@ -63,5 +63,6 @@ public:
 };
 
 
+double getIdealLaneValue(double d);
 
 #endif /* PositionLogic_hpp */
