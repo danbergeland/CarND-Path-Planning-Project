@@ -16,7 +16,8 @@
 
 typedef enum {
     laneKeeping,
-    changeLane,
+    changeLaneLeft,
+    changeLaneRight
 } positionState;
 
 class PositionLogic {
@@ -28,8 +29,13 @@ class PositionLogic {
     double _target_d;
     double _target_speed_mps;
     double _target_time;
-    void checkTraffic(const std::vector<std::vector<double>> &vehicles, double car_s, double car_d);
-    
+    double _car_s;
+    double _car_d;
+    void checkTraffic();
+    std::vector<std::vector<double>> _vehicles;
+    double costPath(double dest_s, double dest_d);
+    double costSpeed(double dest_s);
+    double costCollision(double dest_s, double dest_d);
     
 public:
     PositionLogic();
