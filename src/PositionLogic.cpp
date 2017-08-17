@@ -8,14 +8,16 @@
 
 #include "PositionLogic.hpp"
 #include "geometryhelpers.hpp"
-#define VERBOSE
+#define VERBOSE 
 
 double MAX_PLANNING_TIME = 4;
 double LANE_WIDTH = 4;
 
 //WEIGHTS
 double weight_SPEED = 1;
-double weight_COLLISION = 1;
+double weight_COLLISION = 50;
+double weight_ACCELERATION = 5;
+double weight_TURN = 10;
 
 PositionLogic::PositionLogic(){
     _TP = TrajectoryPlanner();
@@ -30,46 +32,36 @@ PositionLogic::PositionLogic(){
 PositionLogic::~PositionLogic(){
 }
 
-void PositionLogic::Update(const std::vector<std::vector<double>> &vehicles, double car_s, double car_d, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y){
+void PositionLogic::Update(const std::vector<std::vector<double>> &vehicles, double car_s, double car_d, double car_speed, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y){
     _vehicles = vehicles;
     _car_d = car_d;
     _car_s = car_s;
+    _car_v = car_speed;
+    
+    planPath();
     
     if(_state==laneKeeping){
-        _TP.FollowLaneXYVals(_target_s, car_s, car_d, maps_s, maps_x, maps_y);
+        _TP.FollowLaneXYVals(_target_path_length, car_s, car_d, maps_s, maps_x, maps_y);
     }
 }
 
-void PositionLogic::checkTraffic(){
+void PositionLogic::planPath(){
     
-    double inLaneTarget = _target_s;
+    double inLaneTarget = _target_path_length;
     std::vector<double> rightLaneCars;
     std::vector<double> leftLaneCars;
-
-    for (int i = 0; i < _vehicles.size(); i++) {
-        //s and d of nearby vehicles
-        double s = _vehicles[i][5];
-        double d = _vehicles[i][6];
-        double vx = _vehicles[i][3];
-        double vy = _vehicles[i][4];
-        double lane_tol = 1;
-        //check inlane forward
-        if(_car_d < lane_tol+d && _car_d> d-lane_tol && s > _car_s){
-            if(inLaneTarget > s-_car_s){
-                inLaneTarget = s-_car_s-1;
-            }
-        }
-        //check right lane
-        else if (d > _car_d+lane_tol && d > _car_d+LANE_WIDTH+lane_tol){
-            rightLaneCars.push_back(s);
-        }
-        //check left lane
-        else if (d < _car_d-lane_tol && d < _car_d-LANE_WIDTH-lane_tol){
-            leftLaneCars.push_back(s);
-        }
-    }
     
-    double keepLaneCost = costPath(inLaneTarget, _car_d);
+    std::vector<target> targetPositions;
+    //generate target s, d and v
+    generateTargets(targetPositions);
+    //evaluate cost of each traj
+    evaluateTargets(targetPositions);
+    //give the lowest cost traj to the trajectoryPlanner
+    //_TP.MakeTrajectory(_car_s,_car_d,_target_s,_target_d,)
+    _target_s = _car_s + _target_path_length;
+    double keepLaneCost = costPath(_target_s, _car_d, _car_v);
+    
+    std::cout<< keepLaneCost << "\n";
     
 }
 
@@ -81,22 +73,35 @@ void PositionLogic::SetAgression(double agression){
         agression = 0;
     }
     _agression = agression;
-    _target_time = (1-_agression)*MAX_PLANNING_TIME;
+    _target_time = (1-_agression*.75)*MAX_PLANNING_TIME;
+    _target_speed_mps = (_agression * _max_speed_mps)*.29 + _max_speed_mps*.7;
     _TP.setPlanTime(_target_time);
-    _target_s = _target_speed_mps * _target_time;
+    _target_path_length = _target_speed_mps * _target_time;
 }
 
 
-double PositionLogic::costPath(double dest_s, double dest_d){
+double PositionLogic::costPath(double dest_s, double dest_d, double dest_v){
   double totalCost = 0;
   totalCost += costSpeed(dest_s);
   totalCost += costCollision(dest_s, dest_d);
-  
+  totalCost += costAcceleration(dest_v);
+  totalCost += costTurn(dest_s, dest_d);
   return totalCost;
 }
 
 double PositionLogic::costSpeed(double dest_s){
-  return _agression*weight_SPEED*(fabs(dest_s-_target_s));
+  return _agression*weight_SPEED*(fabs(dest_s-(_car_s+_target_path_length)));
+}
+
+double PositionLogic::costAcceleration(double dest_v){
+  return (1-_agression)*weight_ACCELERATION*(fabs(dest_v-_car_v));
+}
+
+double PositionLogic::costTurn(double dest_s, double dest_d){
+  if(fabs(dest_s-_car_s)>.1){
+    return (1-_agression)*weight_TURN*(fabs(dest_d-_car_d)/fabs(dest_s-_car_s));
+  }
+  return 0;
 }
 
 double PositionLogic::costCollision(double dest_s, double dest_d){
@@ -108,15 +113,43 @@ double PositionLogic::costCollision(double dest_s, double dest_d){
     double vx = _vehicles[i][3];
     double vy = _vehicles[i][4];
     //Check rectangle formed by curent s/d and target s/d for vehicles
-    if(s < dest_s-2 && s> _car_s-2){
+    if(s < dest_s && s > _car_s-2){
       //car is in s range of path, so check lateral
-      if(fabs(d-dest_d)<2 || fabs(d-_car_d) < 2){
-        //car is in current lane, or target lane
+      if(fabs(d-dest_d)<2){
         carPresent = 1;
       }
     }
   }
   return carPresent*(1-_agression)*weight_COLLISION;
+}
+
+void PositionLogic::generateTargets(std::vector<target> &outTargetVector){
+  
+  //Always attempt to go straight
+  target straight = {_car_s+_target_path_length,_car_d,_car_v};
+  outTargetVector.push_back(straight);
+  
+  //Always add stop short option
+  target stop = {_car_s+10,_car_d, 0};
+  
+  for (int i = 0; i < _vehicles.size(); i++) {
+    //s and d of nearby vehicles
+    double s = _vehicles[i][5];
+    double d = _vehicles[i][6];
+    double vx = _vehicles[i][3];
+    double vy = _vehicles[i][4];
+    double speed = sqrt(vx*vx+vy*vy);
+    //Check rectangle formed by curent s/d and target s/d for vehicles
+    if(s < _car_s+_target_path_length && s > _car_s-4){
+      //add targets for each vehicle
+      target followCar = {s-2, d, speed};
+      outTargetVector.push_back(followCar);
+    }
+  }
+}
+
+void PositionLogic::evaluateTargets(std::vector<target> &targetsVector){
+  
 }
 
 std::vector<double> PositionLogic::NextXValues(){

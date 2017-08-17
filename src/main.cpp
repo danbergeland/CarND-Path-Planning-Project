@@ -91,7 +91,7 @@ int main() {
 
           	json msgJson;
 
-            PL.Update(sensor_fusion, car_s,car_d,map_waypoints_s,map_waypoints_x,map_waypoints_y);
+            PL.Update(sensor_fusion, car_s,car_d, car_speed, map_waypoints_s,map_waypoints_x,map_waypoints_y);
 
           	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
           	msgJson["next_x"] = PL.NextXValues();
@@ -99,7 +99,7 @@ int main() {
 
           	auto msg = "42[\"control\","+ msgJson.dump()+"]";
 
-          	//this_thread::sleep_for(chrono::milliseconds(1000));
+          	this_thread::sleep_for(chrono::milliseconds(500));
           	ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
           
         }
