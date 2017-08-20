@@ -16,8 +16,7 @@
 
 typedef enum {
     laneKeeping,
-    changeLaneLeft,
-    changeLaneRight
+    changeLane
 } positionState;
 
 typedef struct {
@@ -31,6 +30,7 @@ class PositionLogic {
     TrajectoryPlanner _TP;
     double _agression;
     double _max_speed_mps;
+    double _desired_speed_mps;
     double _target_path_length;
     double _target_d;
     double _target_s;

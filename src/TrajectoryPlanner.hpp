@@ -8,7 +8,7 @@
 
 #ifndef TrajectoryPlanner_hpp
 #define TrajectoryPlanner_hpp
-#define PATH_INC_TIME .02
+
 
 #include <stdio.h>
 #include <vector>
