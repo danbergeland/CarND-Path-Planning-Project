@@ -49,6 +49,7 @@ class PositionLogic {
     double costAcceleration(double dest_v);
     double costCollision(double dest_s, double dest_d);
     double costTurn(double dest_s, double dest_d);
+    double costPassingLane(double dest_d);
     
 public:
     PositionLogic();

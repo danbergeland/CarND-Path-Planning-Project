@@ -87,10 +87,9 @@ void TrajectoryPlanner::MakeTrajectory(double car_s, double car_d, double car_v,
       //define a pair of points at the start and end of the spline
       //otherwise the spline would be a straight line
       dist_inc = (dest_s-car_s)/steps;
-      //start_dist_inc = dist_inc;
+
       spline_x_vals.push_back(car_s);
       spline_x_vals.push_back(car_s+dist_inc);
-      //end_dist_inc = dist_inc;
       spline_x_vals.push_back(dest_s-dist_inc);
       spline_x_vals.push_back(dest_s);
       
@@ -105,7 +104,7 @@ void TrajectoryPlanner::MakeTrajectory(double car_s, double car_d, double car_v,
       double current_s = 0;
       std::vector<double> spline_s_vals;
       std::vector<double> spline_d_vals;
-      
+
       for(int i=0; i<steps;i++){
         double s_val = current_s+dist_inc+car_s;
         spline_s_vals.push_back(s_val);

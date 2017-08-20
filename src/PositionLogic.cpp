@@ -16,8 +16,9 @@ double LANE_WIDTH = 4;
 //WEIGHTS
 double weight_SPEED = 5;
 double weight_COLLISION = 100;
-double weight_ACCELERATION = 5;
+double weight_ACCELERATION = 3;
 double weight_TURN = 10;
+double weight_PASSING_LANES = 3;
 
 PositionLogic::PositionLogic(){
     _TP = TrajectoryPlanner();
@@ -81,7 +82,7 @@ void PositionLogic::SetAgression(double agression){
         agression = 0;
     }
     _agression = agression;
-    _target_time = 3;
+    _target_time = 2.7;
     _desired_speed_mps = (_agression * _max_speed_mps)*.3 + _max_speed_mps*.7;
     _TP.setPlanTime(_target_time);
     _target_path_length = _desired_speed_mps * _target_time;
@@ -94,14 +95,13 @@ double PositionLogic::costPath(double dest_s, double dest_d, double dest_v){
   double cColl = costCollision(dest_s, dest_d);
   double cAcc = costAcceleration(dest_v);
   double cTurn = costTurn(dest_s, dest_d);
-  
+  double cLane = costPassingLane(dest_d);
+/*  
   #ifdef VERBOSE
   std::cout<< std::printf("Costs: speed: %.1f, collision: %.1f, acceleration: %.1f, turn: %.1f \n", cSpeed,cColl,cAcc,cTurn);
   #endif
-  
-  return cSpeed+cColl+cAcc+cTurn;
-  
-  
+*/  
+  return cSpeed+cColl+cAcc+cTurn+cLane;
 }
 
 double PositionLogic::costSpeed(double dest_s){
@@ -134,16 +134,26 @@ double PositionLogic::costCollision(double dest_s, double dest_d){
     double vx = _vehicles[i][3];
     double vy = _vehicles[i][4];
     //Check rectangle formed by curent s/d and target s/d for vehicles
-    if(s < dest_s && s > _car_s-4){
+    if(s < dest_s && s > _car_s-5){
       //car is in s range of path, so check lateral
       if(fabs(d-dest_d)<2){
         carPresent = 1;
       }
     }
   }
+  return carPresent*weight_COLLISION;
+}
 
-  
-  return carPresent*(1-(.5*_agression))*weight_COLLISION;
+double PositionLogic::costPassingLane(double dest_d){
+  //prefer the middle lane, and pass on left if possible
+  double LaneCost = 0;
+  if(dest_d>0 && dest_d<4){
+    LaneCost = weight_PASSING_LANES;
+  }
+  if(dest_d>8){
+    LaneCost = 2*weight_PASSING_LANES;
+  }
+  return LaneCost;
 }
 
 void PositionLogic::generateTargets(std::vector<target> &outTargetVector){
