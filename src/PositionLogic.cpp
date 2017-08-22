@@ -81,8 +81,8 @@ void PositionLogic::SetAgression(double agression){
         agression = 0;
     }
     _agression = agression;
-    _target_time = 2.5;
-    _desired_speed_mps = (_agression * _max_speed_mps)*.3 + _max_speed_mps*.7;
+    _target_time = 2;
+    _desired_speed_mps = (_agression * _max_speed_mps)*.4 + _max_speed_mps*.7;
     _target_path_length = _desired_speed_mps * _target_time;
 }
 
@@ -132,7 +132,8 @@ double PositionLogic::costCollision(double dest_s, double dest_d){
     double vx = _vehicles[i][3];
     double vy = _vehicles[i][4];
     //Check rectangle formed by curent s/d and target s/d for vehicles
-    if(s < dest_s && s > _car_s-5){
+    double speed = sqrt(vx*vx+vy*vy);
+    if(s < dest_s && s+speed/3 > _car_s-5){
       //car is in s range of path, so check lateral
       if(fabs(d-dest_d)<2){
         carPresent = 1;
@@ -160,6 +161,11 @@ void PositionLogic::generateTargets(std::vector<target> &outTargetVector){
     //Always attempt to go to each lane, at desired speed,
     target straight = {_car_s+_target_path_length,_car_d,_desired_speed_mps};
     outTargetVector.push_back(straight);
+    
+    //speed up
+    target accel = {_car_s+_target_path_length,_car_d,_car_v+10};
+    outTargetVector.push_back(accel);
+
     
     if(_car_d > 4){
       target left = {_car_s+_target_path_length, _car_d-LANE_WIDTH,_desired_speed_mps};
