@@ -75,52 +75,100 @@ void TrajectoryPlanner::setSpeedFollowVehicle(const std::vector<std::vector<doub
 
 
 
-void TrajectoryPlanner::MakeTrajectory(double car_s, double car_d, double car_v, double dest_s, double dest_d, double dest_v, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y){
+void TrajectoryPlanner::MakeTrajectory(double car_x, double car_y, double car_v, double car_yaw, double dest_s, double dest_d, double dest_v, std::vector<double> prev_xpts, std::vector<double> prev_ypts){
     next_y_vals = std::vector<double>();
     next_x_vals = std::vector<double>();
 
-    if(car_s < dest_s){
+    std::vector<double> spline_x_vals;
+    std::vector<double> spline_y_vals;
+    
+    //define a pair of points at the start and end of the spline
+    //otherwise the spline would be a straight line
+    //dist_inc = (dest_s-car_s)/steps;
 
-      std::vector<double> spline_x_vals;
-      std::vector<double> spline_y_vals;
-      
-      //define a pair of points at the start and end of the spline
-      //otherwise the spline would be a straight line
-      dist_inc = (dest_s-car_s)/steps;
-
-      spline_x_vals.push_back(car_s);
-      spline_x_vals.push_back(car_s+dist_inc);
-      spline_x_vals.push_back(dest_s-dist_inc);
-      spline_x_vals.push_back(dest_s);
-      
-      spline_y_vals.push_back(car_d);
-      spline_y_vals.push_back(car_d);
-      spline_y_vals.push_back(dest_d);
-      spline_y_vals.push_back(dest_d);
-
-      tk::spline s;
-      s.set_points(spline_x_vals,spline_y_vals);
-      //Calculate path in s / d coords
-      double current_s = 0;
-      std::vector<double> spline_s_vals;
-      std::vector<double> spline_d_vals;
-
-      for(int i=0; i<steps;i++){
-        double s_val = current_s+dist_inc+car_s;
-        spline_s_vals.push_back(s_val);
-        spline_d_vals.push_back(s(s_val));
-        
-        current_s += dist_inc;
-      }
-      
-      //Convert s / d points on the path to x / y values
-      for(int i=0; i<steps; i++){
-        auto nextXY = getXY(spline_s_vals[i],spline_d_vals[i], maps_s, maps_x, maps_y);
-        next_x_vals.push_back(nextXY[0]);
-        next_y_vals.push_back(nextXY[1]);
-      }
-      
-    }
+    //get global xy coords from s, d
+    
+    double ref_x = car_x;
+    double ref_y = car_y;
+    double ref_angle = deg2rad(car_yaw);
+    
+//    auto start_pos1={ref_x-cos(ref_angle),car_y};
+//    auto position = getXY(car_s,car_d,maps_s,maps_x,maps_y);
+//    auto start_pos2=getXY(car_s+dist_inc/2,car_d,maps_s,maps_x,maps_y);
+//    auto end_pos1 = getXY(dest_s-dist_inc,dest_d,maps_s,maps_x,maps_y);
+//    auto end_pos2 = getXY(dest_s, dest_d,maps_s,maps_x,maps_y);
+//    std::cout << "global start : "<< start_pos1[0]<<", "<<start_pos1[1]<<" end: "<<end_pos2[0]<<", "<<end_pos2[1]<<"\n";
+//    
+//    //convert to local
+//    auto local_start1 = XYGlobalToLocal(start_pos1[0],start_pos1[1],position[0],position[1],car_yaw);
+//    auto local_start2 = XYGlobalToLocal(start_pos2[0],start_pos2[1],position[0],position[1],car_yaw);
+//    auto local_end1 = XYGlobalToLocal(end_pos1[0],end_pos1[1],position[0],position[1],car_yaw);
+//    auto local_end2 = XYGlobalToLocal(end_pos2[0],end_pos2[1],position[0],position[1],car_yaw);
+//    std::cout << "local start : "<< local_start1[0]<<", "<<local_start1[1]<<" end: "<<local_end2[0]<<", "<<local_end2[1]<<"\n";
+//    
+//    //spline with local
+//    tk::spline s;
+//    spline_x_vals.push_back(local_start1[0]);
+//    spline_x_vals.push_back(local_start2[0]);
+//    spline_x_vals.push_back(local_end1[0]);
+//    spline_x_vals.push_back(local_end2[0]);
+//    
+//    spline_y_vals.push_back(local_start1[1]);
+//    spline_y_vals.push_back(local_start2[1]);
+//    spline_y_vals.push_back(local_end1[1]);
+//    spline_y_vals.push_back(local_end2[1]);
+//    
+//    
+//    s.set_points(spline_x_vals,spline_y_vals);
+//    //make points
+//    for(int i=0; i<steps;i++){
+//      double local_x = i*dist_inc;
+//      auto XYposition = XYLocalToGlobal(local_x,s(local_x),position[0],position[1],car_yaw);
+//      next_x_vals.push_back(XYposition[0]);
+//      next_y_vals.push_back(XYposition[1]);
+//    }
+//  
+    
+    
+//      spline_x_vals.push_back(car_s);
+//      spline_x_vals.push_back(car_s+dist_inc);
+//      spline_x_vals.push_back(dest_s-dist_inc);
+//      spline_x_vals.push_back(dest_s);
+//      
+//      spline_y_vals.push_back(car_d);
+//      spline_y_vals.push_back(car_d);
+//      spline_y_vals.push_back(dest_d);
+//      spline_y_vals.push_back(dest_d);
+//
+//      tk::spline s;
+//      s.set_points(spline_x_vals,spline_y_vals);
+//      //Calculate path in s / d coords
+//      double current_s = 0;
+//      std::vector<double> spline_s_vals;
+//      std::vector<double> spline_d_vals;
+//
+//      for(int i=0; i<steps;i++){
+//        double s_val = current_s+dist_inc+car_s;
+//        spline_s_vals.push_back(s_val);
+//        spline_d_vals.push_back(s(s_val));
+//        
+//        current_s += dist_inc;
+//      }
+//      
+//      //Convert s / d points on the path to x / y values
+//      for(int i=0; i<steps; i++){
+//        auto nextXY = getXY(spline_s_vals[i],spline_d_vals[i], maps_s, maps_x, maps_y);
+//        next_x_vals.push_back(nextXY[0]);
+//        next_y_vals.push_back(nextXY[1]);
+//      }
+    
 }
+ 
+  void TrajectoryPlanner::SetMaps(const std::vector<double> &maps_s,const std::vector<double> &maps_x,const std::vector<double> &maps_y){
+    _maps_s = maps_s;
+    _maps_x = maps_x;
+    _maps_y = maps_y;
+  }
+
 
 

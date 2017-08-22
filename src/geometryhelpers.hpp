@@ -33,4 +33,6 @@ int NextWaypoint(double x, double y, double theta, vector<double> maps_x, vector
 vector<double> getFrenet(double x, double y, double theta, vector<double> maps_x, vector<double> maps_y);
 vector<double> getXY(double s, double d, vector<double> maps_s, vector<double> maps_x, vector<double> maps_y);
 void loadMapToVectors(vector<double> &map_waypoints_x, vector<double> &map_waypoints_y, vector<double> &map_waypoints_s, vector<double> &map_waypoints_dx, vector<double> &map_waypoints_dy, string mapFileName);
+vector<double> XYGlobalToLocal(double xglobal, double yglobal,double car_x, double car_y, double car_yaw);
+vector<double> XYLocalToGlobal(double xlocal, double ylocal,double car_x, double car_y, double car_yaw);
 #endif /* geometryhelpers_hpp */

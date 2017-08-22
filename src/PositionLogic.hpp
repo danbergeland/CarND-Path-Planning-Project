@@ -27,7 +27,6 @@ typedef struct {
 
 class PositionLogic {
     positionState _state;
-    TrajectoryPlanner _TP;
     double _agression;
     double _max_speed_mps;
     double _desired_speed_mps;
@@ -55,12 +54,9 @@ public:
     PositionLogic();
     ~PositionLogic();
     
-    void Update(const std::vector<std::vector<double>> &vehicles, double car_s, double car_d, double car_speed, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y);
+    std::vector<double> Update(const std::vector<std::vector<double>> &vehicles, double car_s, double car_d, double car_speed);
     
     void SetAgression(double agression);
-    
-    std::vector<double> NextXValues();
-    std::vector<double> NextYValues();
 };
 
 

@@ -41,6 +41,8 @@ int main() {
   uWS::Hub h;
     
   PositionLogic PL;
+  
+  TrajectoryPlanner TP;
     
     
   // Load up map values for waypoint's x,y,s and d normalized normal vectors
@@ -52,7 +54,9 @@ int main() {
 
   loadMapToVectors(map_waypoints_x, map_waypoints_y, map_waypoints_s, map_waypoints_dx, map_waypoints_dy, "../data/highway_map.csv");
 
-  h.onMessage([&PL, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  TP.SetMaps(map_waypoints_s, map_waypoints_x,map_waypoints_y);
+
+  h.onMessage([&PL, &TP, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -91,11 +95,12 @@ int main() {
 
           	json msgJson;
 
-            PL.Update(sensor_fusion, car_s,car_d, car_speed, map_waypoints_s,map_waypoints_x,map_waypoints_y);
+            auto target = PL.Update(sensor_fusion, car_s,car_d, car_speed);
 
+            TP.MakeTrajectory(car_x,car_y,car_speed,car_yaw,target[0],target[1],target[2],previous_path_x,previous_path_y);
           	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
-          	msgJson["next_x"] = PL.NextXValues();
-          	msgJson["next_y"] = PL.NextYValues();
+          	msgJson["next_x"] = TP.next_x_vals;
+          	msgJson["next_y"] = TP.next_y_vals;
 
           	auto msg = "42[\"control\","+ msgJson.dump()+"]";
 

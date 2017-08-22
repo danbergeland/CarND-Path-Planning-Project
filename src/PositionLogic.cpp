@@ -21,7 +21,6 @@ double weight_TURN = 10;
 double weight_PASSING_LANES = 3;
 
 PositionLogic::PositionLogic(){
-    _TP = TrajectoryPlanner();
     _state = laneKeeping;
     _max_speed_mps = 22;
     //desired is the overall cruising speed based on agression
@@ -36,7 +35,7 @@ PositionLogic::PositionLogic(){
 PositionLogic::~PositionLogic(){
 }
 
-void PositionLogic::Update(const std::vector<std::vector<double>> &vehicles, double car_s, double car_d, double car_speed, const std::vector<double> &maps_s, const std::vector<double> &maps_x, const std::vector<double> &maps_y){
+vector<double> PositionLogic::Update(const std::vector<std::vector<double>> &vehicles, double car_s, double car_d, double car_speed){
     _vehicles = vehicles;
     _car_d = car_d;
     _car_s = car_s;
@@ -45,7 +44,7 @@ void PositionLogic::Update(const std::vector<std::vector<double>> &vehicles, dou
     
     planPath();
     
-    _TP.MakeTrajectory(_car_s,_car_d,_car_v,_target_s,_target_d,_target_speed_mps,maps_s,maps_x,maps_y);
+    return {_target_s,_target_d,_target_speed_mps};
 }
 
 void PositionLogic::planPath(){
@@ -82,9 +81,8 @@ void PositionLogic::SetAgression(double agression){
         agression = 0;
     }
     _agression = agression;
-    _target_time = 2.7;
+    _target_time = 2.5;
     _desired_speed_mps = (_agression * _max_speed_mps)*.3 + _max_speed_mps*.7;
-    _TP.setPlanTime(_target_time);
     _target_path_length = _desired_speed_mps * _target_time;
 }
 
@@ -234,10 +232,4 @@ double getIdealLaneValue(double d){
   }
 }
 
-std::vector<double> PositionLogic::NextXValues(){
-    return _TP.next_x_vals;
-}
-std::vector<double> PositionLogic::NextYValues(){
-    return _TP.next_y_vals;
-    
-}
+
