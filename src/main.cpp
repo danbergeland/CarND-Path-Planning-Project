@@ -43,7 +43,7 @@ int main() {
   PositionLogic PL;
   
   TrajectoryPlanner TP;
-  TP.setPlanTime(2);
+  TP.setPlanTime(1.5);
     
   // Load up map values for waypoint's x,y,s and d normalized normal vectors
   vector<double> map_waypoints_x;
@@ -95,10 +95,10 @@ int main() {
 
           	json msgJson;
             
-            if(end_path_s==0)end_path_s = car_s;
-            if(end_path_d==0)end_path_d = car_d;
+            //if(end_path_s==0)end_path_s = car_s;
+            //if(end_path_d==0)end_path_d = car_d;
 
-            auto target = PL.Update(sensor_fusion, end_path_s,end_path_d, car_speed);
+            auto target = PL.Update(sensor_fusion, car_s,car_d, car_speed);
 
 
             TP.MakeTrajectory(car_x,car_s,car_y,car_speed,car_yaw,target[0],target[1],target[2],previous_path_x,previous_path_y);
@@ -110,7 +110,7 @@ int main() {
 
           	auto msg = "42[\"control\","+ msgJson.dump()+"]";
 
-          	//this_thread::sleep_for(chrono::milliseconds(1000));
+          	this_thread::sleep_for(chrono::milliseconds(500));
           	ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
           
         }

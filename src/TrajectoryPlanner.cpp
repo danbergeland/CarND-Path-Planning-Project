@@ -133,7 +133,7 @@ void TrajectoryPlanner::MakeTrajectory(double car_x, double car_s, double car_y,
       auto newPoint = XYGlobalToLocal(spline_x_vals[i],spline_y_vals[i],ref_x,ref_y,ref_angle);
       spline_x_vals[i] = newPoint[0];
       spline_y_vals[i] = newPoint[1];
-       std::cout << "Spline x, Y:"<<spline_x_vals[i]<<", "<<spline_y_vals[i]<<"\n";
+
     }
   
     tk::spline s;

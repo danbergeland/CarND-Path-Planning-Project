@@ -167,15 +167,15 @@ void loadMapToVectors(vector<double> &map_waypoints_x, vector<double> &map_waypo
 vector<double> XYGlobalToLocal(double xglobal, double yglobal,double car_x, double car_y, double car_yaw){
   double shift_x = xglobal - car_x;
   double shift_y = yglobal - car_y;
-  double x = shift_x*cos(0-deg2rad(car_yaw))-shift_y*sin(0-car_yaw);
-  double y = shift_x*sin(0-deg2rad(car_yaw))+shift_y*cos(0-car_yaw);
+  double x = shift_x*cos(0-car_yaw)-shift_y*sin(0-car_yaw);
+  double y = shift_x*sin(0-car_yaw)+shift_y*cos(0-car_yaw);
   vector<double> outVal = {x,y};
   return outVal;
 }
 
 vector<double> XYLocalToGlobal(double xlocal, double ylocal,double car_x, double car_y, double car_yaw){
-  double x = xlocal*cos(deg2rad(car_yaw))-ylocal*sin(car_yaw)+car_x;
-  double y = xlocal*sin(deg2rad(car_yaw))+ylocal*cos(car_yaw)+car_y;
+  double x = xlocal*cos(car_yaw)-ylocal*sin(car_yaw)+car_x;
+  double y = xlocal*sin(car_yaw)+ylocal*cos(car_yaw)+car_y;
   vector<double> outVal = {x,y};
   return outVal;
 }
