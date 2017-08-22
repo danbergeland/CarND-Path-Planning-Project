@@ -94,10 +94,13 @@ int main() {
           	auto sensor_fusion = j[1]["sensor_fusion"];
 
           	json msgJson;
+            
+            if(end_path_s==0)end_path_s = car_s;
+            if(end_path_d==0)end_path_d = car_d;
 
-            auto target = PL.Update(sensor_fusion, car_s,car_d, car_speed);
+            auto target = PL.Update(sensor_fusion, end_path_s,end_path_d, car_speed);
 
-            TP.MakeTrajectory(car_x,car_y,car_speed,car_yaw,target[0],target[1],target[2],previous_path_x,previous_path_y);
+            TP.MakeTrajectory(car_x,car_y,car_s,car_speed,car_yaw,target[0],target[1],target[2],previous_path_x,previous_path_y);
           	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
           	msgJson["next_x"] = TP.next_x_vals;
           	msgJson["next_y"] = TP.next_y_vals;
