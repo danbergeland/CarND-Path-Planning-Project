@@ -14,9 +14,9 @@ double MAX_PLANNING_TIME = 4;
 double LANE_WIDTH = 4;
 
 //WEIGHTS
-double weight_SPEED = 10;
+double weight_SPEED = 5;
 double weight_COLLISION = 1000;
-double weight_ACCELERATION = 4;
+double weight_ACCELERATION = 15;
 double weight_TURN = 3;
 double weight_PASSING_LANES = 10;
 
