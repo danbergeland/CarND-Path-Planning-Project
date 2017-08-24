@@ -14,7 +14,7 @@ double MAX_PLANNING_TIME = 4;
 double LANE_WIDTH = 4;
 
 //WEIGHTS
-double weight_SPEED = 5;
+double weight_SPEED = 10;
 double weight_COLLISION = 100;
 double weight_ACCELERATION = 3;
 double weight_TURN = 10;
@@ -81,7 +81,7 @@ void PositionLogic::SetAgression(double agression){
         agression = 0;
     }
     _agression = agression;
-    _target_time = 2;
+    _target_time = 2.3;
     _desired_speed_mps = (_agression * _max_speed_mps)*.4 + _max_speed_mps*.7;
     _target_path_length = _desired_speed_mps * _target_time;
 }
@@ -163,16 +163,20 @@ void PositionLogic::generateTargets(std::vector<target> &outTargetVector){
     outTargetVector.push_back(straight);
     
     //speed up
-    target accel = {_car_s+_target_path_length,_car_d,_car_v+10};
+    target accel = {_car_s+_target_path_length,_car_d,_car_v+1};
     outTargetVector.push_back(accel);
+    
+    //slow down
+    //target decel = {_car_s+_target_path_length,_car_d,_car_v-1};
+    //outTargetVector.push_back(decel);
 
     
     if(_car_d > 4){
-      target left = {_car_s+_target_path_length, _car_d-LANE_WIDTH,_desired_speed_mps};
+      target left = {_car_s+_target_path_length-4, _car_d-LANE_WIDTH,_desired_speed_mps};
       outTargetVector.push_back(left);
     }
     if(_car_d < 8){
-      target right = {_car_s+_target_path_length, _car_d+LANE_WIDTH,_desired_speed_mps};    
+      target right = {_car_s+_target_path_length-4, _car_d+LANE_WIDTH,_desired_speed_mps};
       outTargetVector.push_back(right);
     }
 

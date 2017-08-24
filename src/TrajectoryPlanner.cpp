@@ -86,11 +86,12 @@ void TrajectoryPlanner::MakeTrajectory(double car_x, double car_s, double car_y,
     //dist_inc = (dest_s-car_s)/steps;
 
     //get global xy coords from s, d
-    
-    double ref_x = car_x;
-    double ref_y = car_y;
-    double ref_angle = deg2rad(car_yaw);
-    
+  
+  double ref_x = car_x;
+  double ref_y = car_y;
+  double ref_angle = deg2rad(car_yaw);
+  double ref_v = car_v;
+  
     int prev_size = prev_xpts.size();
     double prev_car_x =0;
     double prev_car_y =0;
@@ -108,6 +109,7 @@ void TrajectoryPlanner::MakeTrajectory(double car_x, double car_s, double car_y,
       prev_car_x = prev_xpts[prev_size-2];
       prev_car_y = prev_ypts[prev_size-2];
       ref_angle = atan2(ref_y-prev_car_y,ref_x-prev_car_x);
+      ref_v = distance(prev_car_x,prev_car_y,ref_x,ref_y)/PATH_INC_TIME;
     }
     spline_x_vals.push_back(prev_car_x);
     spline_x_vals.push_back(ref_x);
@@ -116,9 +118,9 @@ void TrajectoryPlanner::MakeTrajectory(double car_x, double car_s, double car_y,
     
     
     //build end of spline
-    auto next_wp0 = getXY(dest_s-dest_v/5,dest_d,_maps_s,_maps_x,_maps_y);
-    auto next_wp1 = getXY(dest_s,dest_d,_maps_s,_maps_x,_maps_y);
-    auto next_wp2 = getXY(dest_s+dest_v,dest_d,_maps_s,_maps_x,_maps_y);
+    auto next_wp0 = getXY(dest_s+10,dest_d,_maps_s,_maps_x,_maps_y);
+    auto next_wp1 = getXY(dest_s+20,dest_d,_maps_s,_maps_x,_maps_y);
+    auto next_wp2 = getXY(dest_s+40,dest_d,_maps_s,_maps_x,_maps_y);
     
     spline_x_vals.push_back(next_wp0[0]);
     spline_x_vals.push_back(next_wp1[0]);
@@ -154,11 +156,9 @@ void TrajectoryPlanner::MakeTrajectory(double car_x, double car_s, double car_y,
     double target_dist = distance(0,0,target_x,target_y);
     
     double current_x = 0;
-    dist_inc = target_dist/steps;
-    
+  
     for(int i= 1; i <= steps-prev_size; i++){
-      
-      double N = target_dist/(PATH_INC_TIME*dest_v);
+      double N = target_dist/(PATH_INC_TIME*ref_v);
       double x_point = current_x+target_x/N;
       double y_point = s(x_point);
       
@@ -167,6 +167,9 @@ void TrajectoryPlanner::MakeTrajectory(double car_x, double car_s, double car_y,
       auto newPoint = XYLocalToGlobal(x_point,y_point,ref_x,ref_y,ref_angle);
       next_x_vals.push_back(newPoint[0]);
       next_y_vals.push_back(newPoint[1]);
+      
+      if(ref_v<dest_v)ref_v += .2;
+      if(ref_v>dest_v)ref_v -= .2;
     }
 }
  

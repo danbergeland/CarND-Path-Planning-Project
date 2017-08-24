@@ -110,7 +110,7 @@ int main() {
 
           	auto msg = "42[\"control\","+ msgJson.dump()+"]";
 
-          	this_thread::sleep_for(chrono::milliseconds(500));
+          	this_thread::sleep_for(chrono::milliseconds(100));
           	ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
           
         }
