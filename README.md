@@ -1,6 +1,9 @@
 # CarND-Path-Planning-Project
 Self-Driving Car Engineer Nanodegree Program
 
+### See the controller meet all the requirements on youtube:
+https://www.youtube.com/watch?v=DKmujjgbm7A
+
 ### Project Reflection:
 The requirements for the project are listed below.  My algorithm separated the project out into two main subsystems.  The first is called Position Logic (PL) and the other is Trajectory Planning (TP).  The purpose of the PL is to take in the sensor fusion and car data, and return the most desireable target position in Frenet coordinates.  The TP then takes the existing path, and fills in the remaining path to get to the desired s, d and velocity determined by the PL.  Each of these two subsystems has their own header and cpp file, and they are implemented as classes.  Some other refactoring I did from the original repository was to move all of the geometry functions to its own helper file.  This cleaned up the main.cpp file and made it better to add additional geometry helpers.  I added geometry helper functions to convert global XY coordinates into XY coordinates relative to the car position and angle (local).   
 
