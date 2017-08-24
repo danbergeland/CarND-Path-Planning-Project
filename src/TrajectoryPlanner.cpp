@@ -118,9 +118,9 @@ void TrajectoryPlanner::MakeTrajectory(double car_x, double car_s, double car_y,
     
     
     //build end of spline
-    auto next_wp0 = getXY(dest_s+10,dest_d,_maps_s,_maps_x,_maps_y);
-    auto next_wp1 = getXY(dest_s+20,dest_d,_maps_s,_maps_x,_maps_y);
-    auto next_wp2 = getXY(dest_s+40,dest_d,_maps_s,_maps_x,_maps_y);
+    auto next_wp0 = getXY(dest_s+25,dest_d,_maps_s,_maps_x,_maps_y);
+    auto next_wp1 = getXY(dest_s+40,dest_d,_maps_s,_maps_x,_maps_y);
+    auto next_wp2 = getXY(dest_s+60,dest_d,_maps_s,_maps_x,_maps_y);
     
     spline_x_vals.push_back(next_wp0[0]);
     spline_x_vals.push_back(next_wp1[0]);
@@ -168,8 +168,8 @@ void TrajectoryPlanner::MakeTrajectory(double car_x, double car_s, double car_y,
       next_x_vals.push_back(newPoint[0]);
       next_y_vals.push_back(newPoint[1]);
       
-      if(ref_v<dest_v)ref_v += .2;
-      if(ref_v>dest_v)ref_v -= .2;
+      if(ref_v<dest_v-.3)ref_v += .18;
+      if(ref_v>dest_v+.3)ref_v -= .18;
     }
 }
  
